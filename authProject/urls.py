@@ -22,4 +22,10 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view()),
     path('user/', views.UserCreateView.as_view()),
     path('user/<int:pk>/', views.UserDetailView.as_view()),
+    path('productos/<int:user>/', views.ProductoView.as_view()),
+    path('producto/<int:user>/<int:pk>/', views.ProductoDetailView.as_view()),
+    path('producto/update/<int:user>/<int:pk>/', views.ProductoUpdateView.as_view()),
+    path('producto/delete/<int:user>/<int:pk>/', views.ProductoDeleteView.as_view()),
+    path('producto/', views.ProductoCreateView.as_view())
+
 ]

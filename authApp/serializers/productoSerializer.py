@@ -7,11 +7,11 @@ class ProductoSerializer(serializers.ModelSerializer):
         fields = ['nombre', 'precio']
 
     def to_representation(self, obj):
-        producto = Producto.objects.get(user=obj.user_id) #mirar más tarde
+        producto = Producto.objects.get(id=obj.id) #mirar más tarde
         #user = User.objects.get(id=obj.user_id)
         return{
             'id' : producto.id,
             'nombre' : producto.nombre,
-            'precio' : producto.precio,
-            'user'   : producto.user
+            'precio' : producto.precio
+            #'user'   : producto.user
         }
