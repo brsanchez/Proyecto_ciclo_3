@@ -45,7 +45,7 @@ class ProductoCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *arg, **kwargs):
-        serializer = ProductoSerializer(data=request.data['producto_data'])
+        serializer = ProductoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response("Producto guardado", status=status.HTTP_201_CREATED)
