@@ -4,7 +4,7 @@ from authApp.models.user import User
 class ProductoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Producto
-        fields = ['nombre', 'precio']
+        fields = ['nombre', 'precio', 'user']
 
     def to_representation(self, obj):
         producto = Producto.objects.get(id=obj.id) #mirar más tarde
