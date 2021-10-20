@@ -49,7 +49,7 @@ class ProductoCreateView(generics.CreateAPIView):
         tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
         valid_data = tokenBackend.decode(token,verify=False)
             
-        if valid_data['user_id'] != request.data['user_id']:
+        if valid_data['user_id'] != request.data['user']:
             stringResponse = {'detail':'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ProductoSerializer(data=request.data)
