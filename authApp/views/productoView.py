@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from authApp.models.producto import Producto
 from authApp.serializers.productoSerializer import ProductoSerializer
 
+from rest_framework import filters
+
 class ProductoView(generics.ListAPIView):
     
     serializer_class = ProductoSerializer
@@ -86,3 +88,10 @@ class ProductoDeleteView(generics.DestroyAPIView):
             stringResponse = {'detail':'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
         return super().destroy(request, *arg, **kwargs)
+
+class ProductListView(generics.ListAPIView):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['=id','^nombre', '=precio']
+    
