@@ -10,21 +10,23 @@ from authApp.serializers.productoSerializer import ProductoSerializer
 
 from rest_framework import filters
 
+
 class ProductoView(generics.ListAPIView):
-    
+    queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         token = self.request.META.get('HTTP_AUTHORIZATION')[7:]
         tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
-        valid_data = tokenBackend.decode(token,verify=False)
-            
+        valid_data = tokenBackend.decode(token, verify=False)
+
         if valid_data['user_id'] != self.kwargs['user']:
-            stringResponse = {'detail':'Unauthorized Request'}
+            stringResponse = {'detail': 'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
         queryset = Producto.objects.filter(user_id=self.kwargs['user'])
         return queryset
+
 
 class ProductoDetailView(generics.RetrieveAPIView):
     queryset = Producto.objects.all()
@@ -34,12 +36,13 @@ class ProductoDetailView(generics.RetrieveAPIView):
     def get(self, request, *arg, **kwargs):
         token = request.META.get('HTTP_AUTHORIZATION')[7:]
         tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
-        valid_data = tokenBackend.decode(token,verify=False)
-            
+        valid_data = tokenBackend.decode(token, verify=False)
+
         if valid_data['user_id'] != kwargs['user']:
-            stringResponse = {'detail':'Unauthorized Request'}
+            stringResponse = {'detail': 'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
-        return super().get( request, *arg, **kwargs)
+        return super().get(request, *arg, **kwargs)
+
 
 class ProductoCreateView(generics.CreateAPIView):
     queryset = Producto.objects.all()
@@ -49,49 +52,84 @@ class ProductoCreateView(generics.CreateAPIView):
     def post(self, request, *arg, **kwargs):
         token = request.META.get('HTTP_AUTHORIZATION')[7:]
         tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
-        valid_data = tokenBackend.decode(token,verify=False)
-            
+        valid_data = tokenBackend.decode(token, verify=False)
+
         if valid_data['user_id'] != request.data['user']:
-            stringResponse = {'detail':'Unauthorized Request'}
+            stringResponse = {'detail': 'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
         serializer = ProductoSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response("Producto guardado", status=status.HTTP_201_CREATED)
 
+
 class ProductoUpdateView(generics.UpdateAPIView):
-    queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        token = self.request.META.get('HTTP_AUTHORIZATION')[7:]
+        tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
+        valid_data = tokenBackend.decode(token, verify=False)
+
+        if valid_data['user_id'] != self.kwargs['user'] or valid_data['user_id'] != self.request.data['user']:
+            stringResponse = {'detail': 'Unauthorized Request'}
+            return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
+        queryset = Producto.objects.filter(user_id=self.kwargs['user'])
+        return queryset
 
     def put(self, request, *arg, **kwargs):
         token = request.META.get('HTTP_AUTHORIZATION')[7:]
         tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
-        valid_data = tokenBackend.decode(token,verify=False)
-            
-        if valid_data['user_id'] != kwargs['user']:
-            stringResponse = {'detail':'Unauthorized Request'}
+        valid_data = tokenBackend.decode(token, verify=False)
+
+        if valid_data['user_id'] != kwargs['user'] or valid_data['user_id'] != request.data['user']:
+            stringResponse = {'detail': 'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
         return super().update(request, *arg, **kwargs)
 
+
 class ProductoDeleteView(generics.DestroyAPIView):
-    queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        token = self.request.META.get('HTTP_AUTHORIZATION')[7:]
+        tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
+        valid_data = tokenBackend.decode(token, verify=False)
+
+        if valid_data['user_id'] != self.kwargs['user']:
+            stringResponse = {'detail': 'Unauthorized Request'}
+            return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
+        queryset = Producto.objects.filter(user_id=self.kwargs['user'])
+        return queryset
 
     def delete(self, request, *arg, **kwargs):
         token = request.META.get('HTTP_AUTHORIZATION')[7:]
         tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
-        valid_data = tokenBackend.decode(token,verify=False)
-            
+        valid_data = tokenBackend.decode(token, verify=False)
+
         if valid_data['user_id'] != kwargs['user']:
-            stringResponse = {'detail':'Unauthorized Request'}
+            stringResponse = {'detail': 'Unauthorized Request'}
             return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
         return super().destroy(request, *arg, **kwargs)
+
 
 class ProductListView(generics.ListAPIView):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        token = self.request.META.get('HTTP_AUTHORIZATION')[7:]
+        tokenBackend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'])
+        valid_data = tokenBackend.decode(token, verify=False)
+
+        if valid_data['user_id'] != self.kwargs['user']:
+            stringResponse = {'detail': 'Unauthorized Request'}
+            return Response(stringResponse, status=status.HTTP_401_UNAUTHORIZED)
+        queryset = Producto.objects.filter(user_id=self.kwargs['user'])
+        return queryset
+
     filter_backends = [filters.SearchFilter]
-    search_fields = ['=id','^nombre', '=precio']
-    
+    search_fields = ['=id', '^nombre', '=precio']
